@@ -56,7 +56,7 @@ class InkingTouchListener(
             return false
         }
 
-        val pagePos = viewMatrixManager.screenToPage(ev.x, ev.y)
+        val pagePos = viewMatrixManager.viewToPage(ev.x, ev.y)
         val pageX = pagePos.x
         val pageY = pagePos.y
 

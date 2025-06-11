@@ -192,10 +192,10 @@ fun DrawingSurface(
         Canvas(Modifier.fillMaxSize()) {
             val canvas = drawContext.canvas.nativeCanvas
             canvas.withSave {
-                // The page itself is already transformed via graphicsLayer,
-                // so strokes are rendered in page coordinates without an
-                // additional matrix.
-                strokes.forEach { renderer.draw(canvas, it, null) }
+                // The page is already transformed via graphicsLayer,
+                // so we use an identity matrix when drawing each stroke.
+                val identity = android.graphics.Matrix()
+                strokes.forEach { renderer.draw(canvas, it, identity) }
             }
             if (getSelectedTool() == 1) {
                 drawCircle(

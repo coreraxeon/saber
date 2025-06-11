@@ -24,7 +24,7 @@ import androidx.compose.ui.layout.positionInRoot
 private const val INCH_TO_DP = 96
 val PAGE_WIDTH = (8.5f * INCH_TO_DP).dp
 val PAGE_HEIGHT = (11f * INCH_TO_DP).dp
-val PAGE_SPACING = PAGE_WIDTH * 0.05f
+val PAGE_SPACING = PAGE_WIDTH * 0.01f
 
 @Composable
 fun PageLayout(
@@ -34,9 +34,9 @@ fun PageLayout(
 ) {
     Box(
         modifier = modifier
-            .background(Color(0xFFE0E0E0))
+            .background(Color.White)
             .onGloballyPositioned { coords ->
-                viewMatrixManager.setPageOffset(coords.positionInRoot())
+                viewMatrixManager.updatePageOffset(coords.positionInRoot())
             }
             // Detect pinch zoom and finger pan gestures with fingers only
             .pointerInput("transform") {

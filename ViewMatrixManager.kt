@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 
 class ViewMatrixManager {
+    var zoomEnabled = false
     var scale by mutableStateOf(1f)
         private set
     var translationX by mutableStateOf(0f)
@@ -18,13 +19,15 @@ class ViewMatrixManager {
     val inverseMatrix: Matrix = Matrix()
 
     // Position of the page on screen, used to map MotionEvent coordinates
-    var pageOffset: Offset = Offset.Zero
+    private var pageOffset: Offset = Offset.Zero
 
-    fun setPageOffset(offset: Offset) {
+    fun updatePageOffset(offset: Offset) {
         pageOffset = offset
     }
 
     fun onGesture(zoom: Float, pan: Offset, pivotX: Float, pivotY: Float) {
+        if (!zoomEnabled) return
+
         viewMatrix.postTranslate(-pivotX, -pivotY)
         viewMatrix.postScale(zoom, zoom)
         viewMatrix.postTranslate(pivotX, pivotY)
@@ -34,6 +37,12 @@ class ViewMatrixManager {
 
     fun screenToPage(x: Float, y: Float): Offset {
         val pts = floatArrayOf(x - pageOffset.x, y - pageOffset.y)
+        inverseMatrix.mapPoints(pts)
+        return Offset(pts[0], pts[1])
+    }
+
+    fun viewToPage(x: Float, y: Float): Offset {
+        val pts = floatArrayOf(x, y)
         inverseMatrix.mapPoints(pts)
         return Offset(pts[0], pts[1])
     }

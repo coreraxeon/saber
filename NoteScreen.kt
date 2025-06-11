@@ -2,6 +2,7 @@
 package com.example.stylusdraw
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
@@ -38,8 +39,11 @@ import com.example.stylusdraw.StrokeCanvas
 import com.example.stylusdraw.ViewMatrixManager
 import com.example.stylusdraw.ZoomControls
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.ExperimentalComposeUiApi
+import android.view.MotionEvent
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun NoteScreen(
     nav: NavController,
@@ -171,7 +175,21 @@ fun NoteScreen(
                     Modifier
                         .padding(padding)
                         .fillMaxSize()
+                        .background(Color(0xFFE0E0E0))
                         .onSizeChanged { boxSize = it }
+                        .pointerInteropFilter { ev ->
+                            val tool = ev.getToolType(0)
+                            if (tool == MotionEvent.TOOL_TYPE_STYLUS ||
+                                tool == MotionEvent.TOOL_TYPE_ERASER
+                            ) {
+                                when (ev.actionMasked) {
+                                    MotionEvent.ACTION_DOWN -> penDown = true
+                                    MotionEvent.ACTION_UP,
+                                    MotionEvent.ACTION_CANCEL -> penDown = false
+                                }
+                            }
+                            false
+                        }
                 ) {
                     val density = LocalDensity.current
                     val screenW = with(density) { boxSize.width.toDp() }
@@ -261,6 +279,7 @@ fun NoteScreen(
                             Column(
                                 Modifier
                                     .fillMaxSize()
+                                    .background(Color(0xFFE0E0E0))
                                     .verticalScroll(rememberScrollState())
                             ) {
                                 DrawingSurface(
@@ -290,6 +309,7 @@ fun NoteScreen(
                             Box(
                                 Modifier
                                     .fillMaxSize()
+                                    .background(Color(0xFFE0E0E0))
                                     .horizontalScroll(rememberScrollState())
                                     .verticalScroll(rememberScrollState())
                             ) {
@@ -345,13 +365,6 @@ fun NoteScreen(
                         dismissKey = dismissKey,
                         onForward = { redo() },
                         onReverse = { undo() }
-                    )
-
-                    ZoomControls(
-                        viewMatrixManager = viewMatrixManager,
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(8.dp)
                     )
                 }
             }

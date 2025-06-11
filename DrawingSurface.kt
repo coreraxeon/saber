@@ -76,8 +76,12 @@ fun DrawingSurface(
     // instance for each DrawingSurface.
     val inkView = remember(noteId) { InProgressStrokesView(context) }
 
-    // Update the view transform to match the current zoom/pan state
-    LaunchedEffect(viewMatrixManager.viewMatrix) {
+    // Update the view transform whenever zoom or pan changes
+    LaunchedEffect(
+        viewMatrixManager.scale,
+        viewMatrixManager.translationX,
+        viewMatrixManager.translationY
+    ) {
         inkView.motionEventToViewTransform = viewMatrixManager.inverseMatrix
     }
 

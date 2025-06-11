@@ -36,6 +36,8 @@ import androidx.compose.ui.unit.LayoutDirection
 import kotlinx.coroutines.launch
 import com.example.stylusdraw.StrokeCanvas
 import com.example.stylusdraw.ViewMatrixManager
+import com.example.stylusdraw.ZoomControls
+import androidx.compose.ui.Alignment
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -343,6 +345,13 @@ fun NoteScreen(
                         dismissKey = dismissKey,
                         onForward = { redo() },
                         onReverse = { undo() }
+                    )
+
+                    ZoomControls(
+                        viewMatrixManager = viewMatrixManager,
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(8.dp)
                     )
                 }
             }

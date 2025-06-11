@@ -16,8 +16,9 @@ fun StrokeCanvas(strokes: List<InkStroke>, renderer: CanvasStrokeRenderer) {
     Canvas(Modifier.fillMaxSize()) {
         val canvas = drawContext.canvas.nativeCanvas
         canvas.withSave {
-            val m = Matrix().also { getMatrix(it) }
-            strokes.forEach { renderer.draw(canvas, it, m) }
+            // Strokes are drawn in page coordinates; the parent layer
+            // already applies the view matrix.
+            strokes.forEach { renderer.draw(canvas, it, null) }
         }
     }
 }

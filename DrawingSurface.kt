@@ -192,7 +192,10 @@ fun DrawingSurface(
         Canvas(Modifier.fillMaxSize()) {
             val canvas = drawContext.canvas.nativeCanvas
             canvas.withSave {
-                strokes.forEach { renderer.draw(canvas, it, viewMatrixManager.viewMatrix) }
+                // The page itself is already transformed via graphicsLayer,
+                // so strokes are rendered in page coordinates without an
+                // additional matrix.
+                strokes.forEach { renderer.draw(canvas, it, null) }
             }
             if (getSelectedTool() == 1) {
                 drawCircle(

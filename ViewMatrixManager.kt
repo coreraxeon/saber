@@ -17,6 +17,13 @@ class ViewMatrixManager {
     val viewMatrix: Matrix = Matrix()
     val inverseMatrix: Matrix = Matrix()
 
+    // Position of the page on screen, used to map MotionEvent coordinates
+    var pageOffset: Offset = Offset.Zero
+
+    fun setPageOffset(offset: Offset) {
+        pageOffset = offset
+    }
+
     fun onGesture(zoom: Float, pan: Offset, pivotX: Float, pivotY: Float) {
         viewMatrix.postTranslate(-pivotX, -pivotY)
         viewMatrix.postScale(zoom, zoom)
@@ -26,7 +33,7 @@ class ViewMatrixManager {
     }
 
     fun screenToPage(x: Float, y: Float): Offset {
-        val pts = floatArrayOf(x, y)
+        val pts = floatArrayOf(x - pageOffset.x, y - pageOffset.y)
         inverseMatrix.mapPoints(pts)
         return Offset(pts[0], pts[1])
     }

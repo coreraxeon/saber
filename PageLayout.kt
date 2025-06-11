@@ -35,6 +35,9 @@ fun PageLayout(
     Box(
         modifier = modifier
             .background(Color(0xFFE0E0E0))
+            .onGloballyPositioned { coords ->
+                viewMatrixManager.setPageOffset(coords.positionInRoot())
+            }
             // Detect pinch zoom and finger pan gestures with fingers only
             .pointerInput("transform") {
                 awaitPointerEventScope {
@@ -50,7 +53,7 @@ fun PageLayout(
                         }
 
                         val centroid = fingers.map { it.position }.reduce { a, b -> a + b } / fingers.size.toFloat()
-
+                        var transformed = false
                         if (fingers.size >= 2) {
                             val diff = fingers[0].position - fingers[1].position
                             val d = kotlin.math.hypot(diff.x.toDouble(), diff.y.toDouble()).toFloat()
@@ -59,18 +62,22 @@ fun PageLayout(
                             val pan = if (prevCentroid != null) centroid - prevCentroid!! else Offset.Zero
                             if (zoom != 1f || pan != Offset.Zero) {
                                 viewMatrixManager.onGesture(zoom, pan, centroid.x, centroid.y)
+                                transformed = true
                             }
                             prevDistance = d
                         } else {
                             val pan = if (prevCentroid != null) centroid - prevCentroid!! else Offset.Zero
                             if (viewMatrixManager.scale > 1f && pan != Offset.Zero) {
                                 viewMatrixManager.onGesture(1f, pan, centroid.x, centroid.y)
+                                transformed = true
                             }
                             prevDistance = null
                         }
 
                         prevCentroid = centroid
-                        fingers.forEach { it.consume() }
+                        if (transformed) {
+                            fingers.forEach { it.consume() }
+                        }
                     }
                 }
             }
